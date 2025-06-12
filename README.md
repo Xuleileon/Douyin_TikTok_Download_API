@@ -9,6 +9,8 @@
 
 🚀「Douyin_TikTok_Download_API」是一个开箱即用的高性能异步[抖音](https://www.douyin.com)|[TikTok](https://www.tiktok.com)|[Bilibili](https://www.bilibili.com)数据爬取工具，支持API调用，在线批量解析及下载。
 
+🍪 **新增CookieCloud支持**：现已集成CookieCloud动态Cookie管理，自动获取最新Cookie，告别手动更新！
+
 [![GitHub license](https://img.shields.io/github/license/Evil0ctal/Douyin_TikTok_Download_API?style=flat-square)](LICENSE)
 [![Release Version](https://img.shields.io/github/v/release/Evil0ctal/Douyin_TikTok_Download_API?style=flat-square)](https://github.com/Evil0ctal/Douyin_TikTok_Download_API/releases/latest)
 [![GitHub Star](https://img.shields.io/github/stars/Evil0ctal/Douyin_TikTok_Download_API?style=flat-square)](https://github.com/Evil0ctal/Douyin_TikTok_Download_API/stargazers)
@@ -330,11 +332,22 @@ https://www.tiktok.com/@evil0ctal/video/7156033831819037994
 
 ## ⚠️部署前的准备工作(请仔细阅读)：
 
+### 🍪 Cookie管理方式（二选一）
+
+#### 方式一：CookieCloud动态管理（推荐）
+- **新功能**：本项目现已支持CookieCloud动态Cookie管理，可自动获取最新Cookie
+- 配置CookieCloud后，系统会自动从CookieCloud服务获取最新Cookie并更新配置文件
+- 支持缓存机制，避免频繁请求，提高效率
+- 详细配置方法请参考：[CookieCloud集成指南](./docs/COOKIECLOUD_GUIDE.md)
+
+#### 方式二：手动配置Cookie（传统方式）
 - 你需要自行解决爬虫Cookie风控问题，否则可能会导致接口无法使用，修改完配置文件后需要重启服务才能生效，并且最好使用已经登录过的账号的Cookie。
   - 抖音网页端Cookie（自行获取并替换下面配置文件中的Cookie）：
   - https://github.com/Evil0ctal/Douyin_TikTok_Download_API/blob/30e56e5a7f97f87d60b1045befb1f6db147f8590/crawlers/douyin/web/config.yaml#L7
   - TikTok网页端Cookie（自行获取并替换下面配置文件中的Cookie）：
   - https://github.com/Evil0ctal/Douyin_TikTok_Download_API/blob/30e56e5a7f97f87d60b1045befb1f6db147f8590/crawlers/tiktok/web/config.yaml#L6
+
+### 🔧 其他注意事项
 - 演示站点的在线下载功能被我关掉了，有人下的视频巨大无比直接给我服务器干崩了，你可以在网页解析结果页面右键保存视频...
 - 演示站点的Cookie是我自己的，不保证长期有效，只起到演示作用，自己部署的话请自行获取Cookie。
 - 需要TikTok Web API返回的视频链接直接访问会发生HTTP 403错误，请使用本项目API中的`/api/download`接口对TikTok 视频进行下载，这个接口在演示站点中已经被手动关闭了，需要你自行部署本项目。

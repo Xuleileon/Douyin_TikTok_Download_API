@@ -45,6 +45,10 @@ from crawlers.bilibili.web.utils import EndpointGenerator, bv2av, ResponseAnalyz
 # 数据请求模型
 from crawlers.bilibili.web.models import UserPostVideos, UserProfile, ComPopular, UserDynamic, PlayUrl
 
+# CookieCloud管理器
+from crawlers.utils.cookiecloud_manager import get_cookie_manager
+from crawlers.utils.logger import logger
+
 # 配置文件路径
 path = os.path.abspath(os.path.dirname(__file__))
 
@@ -55,18 +59,52 @@ with open(f"{path}/config.yaml", "r", encoding="utf-8") as f:
 
 class BilibiliWebCrawler:
 
-    # 从配置文件读取哔哩哔哩请求头
+    def __init__(self):
+        """初始化B站爬虫"""
+        self.cookie_manager = get_cookie_manager()
+
+    # 从配置文件读取哔哩哔哩请求头（增强版，支持CookieCloud）
     async def get_bilibili_headers(self):
         bili_config = config['TokenManager']['bilibili']
+
+        # 获取基础headers
+        base_headers = {
+            "accept-language": bili_config["headers"]["accept-language"],
+            "origin": bili_config["headers"]["origin"],
+            "referer": bili_config["headers"]["referer"],
+            "user-agent": bili_config["headers"]["user-agent"],
+        }
+
+        # 获取代理配置
+        proxies = {
+            "http://": bili_config["proxies"]["http"],
+            "https://": bili_config["proxies"]["https"]
+        }
+
+        # 尝试从CookieCloud获取cookie
+        dynamic_cookie = None
+        if self.cookie_manager.enabled:
+            try:
+                dynamic_cookie = self.cookie_manager.get_cookies('bilibili')
+                if dynamic_cookie:
+                    logger.info("使用CookieCloud的B站cookie")
+                else:
+                    logger.warning("CookieCloud未返回B站cookie，使用配置文件中的cookie")
+            except Exception as e:
+                logger.error(f"从CookieCloud获取B站cookie失败: {e}")
+
+        # 选择cookie：优先使用CookieCloud的cookie，否则使用配置文件中的cookie
+        final_cookie = dynamic_cookie if dynamic_cookie else bili_config["headers"]["cookie"]
+
+        if not final_cookie:
+            logger.warning("B站没有可用的cookie")
+
+        # 设置最终的cookie
+        base_headers["cookie"] = final_cookie
+
         kwargs = {
-            "headers": {
-                "accept-language": bili_config["headers"]["accept-language"],
-                "origin": bili_config["headers"]["origin"],
-                "referer": bili_config["headers"]["referer"],
-                "user-agent": bili_config["headers"]["user-agent"],
-                "cookie": bili_config["headers"]["cookie"],
-            },
-            "proxies": {"http://": bili_config["proxies"]["http"], "https://": bili_config["proxies"]["https"]},
+            "headers": base_headers,
+            "proxies": proxies,
         }
         return kwargs
 

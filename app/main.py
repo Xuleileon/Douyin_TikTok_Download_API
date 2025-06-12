@@ -89,6 +89,10 @@ tags_metadata = [
         "name": "Download",
         "description": "**(下载数据接口/Download data endpoints)**",
     },
+    {
+        "name": "CookieCloud-API",
+        "description": "**(CookieCloud管理接口/CookieCloud management endpoints)**",
+    },
 ]
 
 version = config['API']['Version']

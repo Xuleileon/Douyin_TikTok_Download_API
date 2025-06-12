@@ -5,6 +5,7 @@ from app.api.endpoints import (
     douyin_web,
     bilibili_web,
     hybrid_parsing, ios_shortcut, download,
+    cookiecloud,
 )
 
 router = APIRouter()
@@ -27,3 +28,6 @@ router.include_router(ios_shortcut.router, prefix="/ios", tags=["iOS-Shortcut"])
 
 # Download routers
 router.include_router(download.router, tags=["Download"])
+
+# CookieCloud routers
+router.include_router(cookiecloud.router, prefix="/cookiecloud", tags=["CookieCloud-API"])

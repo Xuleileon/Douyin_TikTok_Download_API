@@ -66,6 +66,10 @@ from crawlers.tiktok.web.models import (
     UserFollow
 )
 
+# CookieCloud管理器
+from crawlers.utils.cookiecloud_manager import get_cookie_manager
+from crawlers.utils.logger import logger
+
 
 # 配置文件路径
 path = os.path.abspath(os.path.dirname(__file__))
@@ -78,19 +82,50 @@ with open(f"{path}/config.yaml", "r", encoding="utf-8") as f:
 class TikTokWebCrawler:
 
     def __init__(self):
+        """初始化TikTok爬虫"""
         self.proxy_pool = None
+        self.cookie_manager = get_cookie_manager()
 
-    # 从配置文件中获取TikTok的请求头
+    # 从配置文件中获取TikTok的请求头（增强版，支持CookieCloud）
     async def get_tiktok_headers(self):
         tiktok_config = config["TokenManager"]["tiktok"]
+
+        # 获取基础headers
+        base_headers = {
+            "User-Agent": tiktok_config["headers"]["User-Agent"],
+            "Referer": tiktok_config["headers"]["Referer"],
+        }
+
+        # 获取代理配置
+        proxies = {
+            "http://": tiktok_config["proxies"]["http"],
+            "https://": tiktok_config["proxies"]["https"]
+        }
+
+        # 尝试从CookieCloud获取cookie
+        dynamic_cookie = None
+        if self.cookie_manager.enabled:
+            try:
+                dynamic_cookie = self.cookie_manager.get_cookies('tiktok')
+                if dynamic_cookie:
+                    logger.info("使用CookieCloud的TikTok cookie")
+                else:
+                    logger.warning("CookieCloud未返回TikTok cookie，使用配置文件中的cookie")
+            except Exception as e:
+                logger.error(f"从CookieCloud获取TikTok cookie失败: {e}")
+
+        # 选择cookie：优先使用CookieCloud的cookie，否则使用配置文件中的cookie
+        final_cookie = dynamic_cookie if dynamic_cookie else tiktok_config["headers"]["Cookie"]
+
+        if not final_cookie:
+            logger.warning("TikTok没有可用的cookie")
+
+        # 设置最终的cookie
+        base_headers["Cookie"] = final_cookie
+
         kwargs = {
-            "headers": {
-                "User-Agent": tiktok_config["headers"]["User-Agent"],
-                "Referer": tiktok_config["headers"]["Referer"],
-                "Cookie": tiktok_config["headers"]["Cookie"],
-            },
-            "proxies": {"http://": tiktok_config["proxies"]["http"],
-                        "https://": tiktok_config["proxies"]["https"]}
+            "headers": base_headers,
+            "proxies": proxies
         }
         return kwargs
 

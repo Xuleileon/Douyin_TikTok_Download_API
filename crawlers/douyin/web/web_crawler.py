@@ -59,6 +59,10 @@ from crawlers.douyin.web.utils import (AwemeIdFetcher,  # Aweme ID获取
                                        extract_valid_urls  # URL提取
                                        )
 
+# CookieCloud管理器
+from crawlers.utils.cookiecloud_manager import get_cookie_manager
+from crawlers.utils.logger import logger
+
 # 配置文件路径
 path = os.path.abspath(os.path.dirname(__file__))
 
@@ -69,17 +73,51 @@ with open(f"{path}/config.yaml", "r", encoding="utf-8") as f:
 
 class DouyinWebCrawler:
 
-    # 从配置文件中获取抖音的请求头
+    def __init__(self):
+        """初始化抖音爬虫"""
+        self.cookie_manager = get_cookie_manager()
+
+    # 从配置文件中获取抖音的请求头（增强版，支持CookieCloud）
     async def get_douyin_headers(self):
         douyin_config = config["TokenManager"]["douyin"]
+
+        # 获取基础headers
+        base_headers = {
+            "Accept-Language": douyin_config["headers"]["Accept-Language"],
+            "User-Agent": douyin_config["headers"]["User-Agent"],
+            "Referer": douyin_config["headers"]["Referer"],
+        }
+
+        # 获取代理配置
+        proxies = {
+            "http://": douyin_config["proxies"]["http"],
+            "https://": douyin_config["proxies"]["https"]
+        }
+
+        # 尝试从CookieCloud获取cookie
+        dynamic_cookie = None
+        if self.cookie_manager.enabled:
+            try:
+                dynamic_cookie = self.cookie_manager.get_cookies('douyin')
+                if dynamic_cookie:
+                    logger.info("使用CookieCloud的抖音cookie")
+                else:
+                    logger.warning("CookieCloud未返回抖音cookie，使用配置文件中的cookie")
+            except Exception as e:
+                logger.error(f"从CookieCloud获取抖音cookie失败: {e}")
+
+        # 选择cookie：优先使用CookieCloud的cookie，否则使用配置文件中的cookie
+        final_cookie = dynamic_cookie if dynamic_cookie else douyin_config["headers"]["Cookie"]
+
+        if not final_cookie:
+            logger.warning("抖音没有可用的cookie")
+
+        # 设置最终的cookie
+        base_headers["Cookie"] = final_cookie
+
         kwargs = {
-            "headers": {
-                "Accept-Language": douyin_config["headers"]["Accept-Language"],
-                "User-Agent": douyin_config["headers"]["User-Agent"],
-                "Referer": douyin_config["headers"]["Referer"],
-                "Cookie": douyin_config["headers"]["Cookie"],
-            },
-            "proxies": {"http://": douyin_config["proxies"]["http"], "https://": douyin_config["proxies"]["https"]},
+            "headers": base_headers,
+            "proxies": proxies,
         }
         return kwargs
 

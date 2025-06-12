@@ -1,46 +1,66 @@
 # Web
 Web:
   # APP Switch
-  PyWebIO_Enable: true    # Enable APP | 启用APP
+  PyWebIO_Enable: true # Enable APP | 启用APP
 
   # APP Information
-  Domain: https://douyin.wtf    # Web domain | Web域名
+  Domain: https://douyin.wtf # Web domain | Web域名
 
   # APP Configuration
-  PyWebIO_Theme: minty    # PyWebIO theme | PyWebIO主题
-  Max_Take_URLs: 30    # Maximum number of URLs that can be taken at a time | 一次最多可以取得的URL数量
-
+  PyWebIO_Theme: minty # PyWebIO theme | PyWebIO主题
+  Max_Take_URLs: 30 # Maximum number of URLs that can be taken at a time | 一次最多可以取得的URL数量
 
   # Web Information
-  Tab_Title: Douyin_TikTok_Download_API    # Web title | Web标题
-  Description: Douyin_TikTok_Download_API is a free open-source API service for Douyin/TikTok. It provides a simple, fast, and stable API for developers to develop applications based on Douyin/TikTok.    # Web description | Web描述
-  Favicon: https://raw.githubusercontent.com/Evil0ctal/Douyin_TikTok_Download_API/main/logo/logo192.png    # Web favicon | Web图标
+  Tab_Title: Douyin_TikTok_Download_API # Web title | Web标题
+  Description: Douyin_TikTok_Download_API is a free open-source API service for Douyin/TikTok. It provides a simple, fast, and stable API for developers to develop applications based on Douyin/TikTok. # Web description | Web描述
+  Favicon: https://raw.githubusercontent.com/Evil0ctal/Douyin_TikTok_Download_API/main/logo/logo192.png # Web favicon | Web图标
 
   # Fun Configuration
-  Easter_Egg: true    # Enable Easter Egg | 启用彩蛋
+  Easter_Egg: true # Enable Easter Egg | 启用彩蛋
   Live2D_Enable: true
   Live2D_JS: https://fastly.jsdelivr.net/gh/TikHubIO/TikHub_live2d@latest/autoload.js
 
 # API
 API:
   # Network Configuration
-  Host_IP: 0.0.0.0    # default IP | 默认IP
-  Host_Port: 80    # default port is 80 | 默认端口为80
-  Docs_URL: /docs    # API documentation URL | API文档URL
-  Redoc_URL: /redoc    # API documentation URL | API文档URL
+  Host_IP: 0.0.0.0 # default IP | 默认IP
+  Host_Port: 80 # default port is 80 | 默认端口为80
+  Docs_URL: /docs # API documentation URL | API文档URL
+  Redoc_URL: /redoc # API documentation URL | API文档URL
 
   # API Information
-  Version: V4.1.2    # API version | API版本
-  Update_Time: 2025/03/16    # API update time | API更新时间
-  Environment: Demo    # API environment | API环境
+  Version: V4.1.2 # API version | API版本
+  Update_Time: 2025/03/16 # API update time | API更新时间
+  Environment: Demo # API environment | API环境
 
   # Download Configuration
-  Download_Switch: true    # Enable download function | 启用下载功能
+  Download_Switch: true # Enable download function | 启用下载功能
 
   # File Configuration
-  Download_Path: "./download"    # Default download directory | 默认下载目录
-  Download_File_Prefix: "douyin.wtf_"    # Default download file prefix | 默认下载文件前缀
+  Download_Path: "./download" # Default download directory | 默认下载目录
+  Download_File_Prefix: "douyin.wtf_" # Default download file prefix | 默认下载文件前缀
 
+# CookieCloud Configuration
+CookieCloud:
+  # Enable CookieCloud dynamic cookie fetching | 启用CookieCloud动态cookie获取
+  Enable: true
+
+  # CookieCloud server configuration | CookieCloud服务器配置
+  Server_URL: "" # Will be loaded from .env file | 将从.env文件加载
+  UUID: "" # Will be loaded from .env file | 将从.env文件加载
+  Password: "" # Will be loaded from .env file | 将从.env文件加载
+
+  # Cache configuration | 缓存配置
+  Cache_TTL: 3600 # Cache time to live in seconds (1 hour) | 缓存生存时间（秒），默认1小时
+
+  # Domain mapping for cookie fetching | Cookie获取的域名映射
+  Domain_Mapping:
+    douyin: "douyin.com"
+    tiktok: "tiktok.com"
+    bilibili: "bilibili.com"
+
+  # Fallback to hardcoded cookies if CookieCloud fails | CookieCloud失败时回退到硬编码cookie
+  Fallback_Enabled: true
 
 # iOS Shortcut
 iOS_Shortcut:
